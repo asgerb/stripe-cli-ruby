@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
   spec.executables << "stripe"
   spec.require_paths = [ "lib" ]
 
-  spec.add_development_dependency "puma"
+  spec.add_development_dependency "puma", "~> 6.0" # see https://github.com/puma/puma/issues/3724
   spec.add_development_dependency "stripe"
 
   spec.add_development_dependency "rubocop-rails-omakase"
