@@ -73,6 +73,14 @@ plugin :stripe if ENV["RAILS_ENV"] == "development"
 
 By default, events will be forwarded to `/stripe_events`, this can be configured using `stripe_forward_to "/stripe/webhook"` in `puma.rb`.
 
+The forward URL's host and port are derived from puma's first TCP bind. When there is none — e.g. under [puma-dev](https://github.com/puma/puma-dev), which binds a unix socket — set the host explicitly with `stripe_forward_host`:
+
+```ruby
+stripe_forward_host "myapp.test" # or "localhost:3000"
+```
+
+Note that puma-dev neither loads `config/puma.rb` nor sets `RAILS_ENV` by default: point its `CONFIG` variable at your puma config (e.g. `export CONFIG=config/puma.rb` in `.pumaenv`) and guard with `ENV.fetch("RAILS_ENV", "development") == "development"` instead of a plain equality check.
+
 You can grab your *signing secret* using `StripeCLI.signing_secret`. For example:
 
 ```ruby
