@@ -26,6 +26,26 @@ module StripeCLI
     end
 
     def executable(exe_path: DEFAULT_DIR)
+      if (install_dir = ENV["STRIPE_CLI_INSTALL_DIR"]) && !install_dir.empty?
+        install_dir = File.expand_path(install_dir)
+
+        unless File.directory?(install_dir)
+          raise DirectoryNotFoundException, <<~MESSAGE
+            STRIPE_CLI_INSTALL_DIR is set to #{install_dir}, but that directory does not exist.
+          MESSAGE
+        end
+
+        exe_file = File.join(install_dir, "stripe")
+
+        unless File.exist?(exe_file)
+          raise ExecutableNotFoundException, <<~MESSAGE
+            Cannot find the stripe cli executable in STRIPE_CLI_INSTALL_DIR (#{install_dir}).
+          MESSAGE
+        end
+
+        return exe_file
+      end
+
       if StripeCLI::Upstream::NATIVE_PLATFORMS.keys.none? { |p| Gem::Platform.match_gem?(Gem::Platform.new(p), GEM_NAME) }
         raise UnsupportedPlatformException, <<~MESSAGE
           #{GEM_NAME} does not support the #{platform} platform
